@@ -116,6 +116,7 @@
 
 class Character {
   static MAX_HEALTH = 100;
+
   constructor(name) {
     this.name = name;
     this.health = 100;
@@ -126,37 +127,96 @@ class Character {
 class Adventurer extends Character {
   static ROLES = ["Fighter", "Healer", "Wizard"];
   companion = { name: "", type: "" };
-  constructor(name, role) {
+  constructor(name, health, role) {
     super(name);
+    // Check if the provided role is valid
+    if (!Adventurer.isValidRole(role)) {
+      throw new Error("Invalid role for adventurer");
+    }
     // Adventurers have specialized roles.
     this.role = role;
     // Every adventurer starts with a bed and 50 gold coins.
     this.inventory.push("bedroll", "50 gold coins");
   }
+
+  // Method to check if a role is valid
+  static isValidRole(role) {
+    return Adventurer.ROLES.includes(role);
+  }
+
   // Adventurers have the ability to scout ahead of them.
   scout() {
     console.log(`${this.name} is scouting ahead...`);
     super.roll();
   }
-
+  //   Method to set the companion
+  //   set companion(newCompanion) {
+  //     this.companion.name = newCompanion.name;
+  //     this.companion.type = newCompanion.type;
+  //     this.companion.companion = newCompanion.companion;
+  //   }
   set companion(newCompanion) {
-    this.companion.name = newCompanion.name;
-    this.companion.type = newCompanion.type;
-    this.companion.companion = newCompanion.companion;
+    if (
+      newCompanion instanceof Companion ||
+      newCompanion === null ||
+      newCompanion === undefined
+    ) {
+      this.companion = newCompanion;
+    } else {
+      throw new Error("Invalid companion object");
+    }
+  }
+  addToInventoryArray(...items) {
+    items = items.flat();
+    items.forEach((item) => {
+      if (typeof item === "string") {
+        this.inventory.push(item);
+      }
+    });
   }
 }
-
-const robin = new Adventurer("Robin", "Healer");
 
 class Companion {
+  #name;
+  #type;
+  #belongings = [];
+  #companion = { name: "", type: "" };
   constructor(name, type) {
-    this.name = name;
-    this.type = type;
+    this.#name = name;
+    this.#type = type;
+    this.#belongings = [];
+    this.#companion = { name: "", type: "" };
+  }
+  addToBelongingsArray(...accessories) {
+    accessories = accessories.flat();
+    accessories.forEach((accessory) => {
+      this.#belongings.push(accessory);
+    });
+    this.#belongings.push;
+  }
+  set companion(newCompanion) {
+    if (
+      newCompanion instanceof Companion ||
+      newCompanion === null ||
+      newCompanion === undefined
+    ) {
+      this.#companion = newCompanion;
+    } else {
+      throw new Error("Invalid companion object");
+    }
   }
 }
 
+const robin = new Adventurer("Robin", Character.MAX_HEALTH, "Healer");
+robin.addToInventoryArray(["sword", "potion", "artifact"]);
+// console.log(Adventurer.MAX_HEALTH);
 const leo = new Companion("Leo", "cat");
-console.log(leo);
-
+const frank = new Companion("Frank", "flea");
+frank.addToBelongingsArray(["small hat", "sunglasses"]);
+leo.companion = frank;
 robin.companion = leo;
+
+console.log(leo);
+console.log(frank);
 console.log(robin);
+console.log(robin.companion);
